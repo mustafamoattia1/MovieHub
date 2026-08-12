@@ -1,0 +1,13 @@
+{
+  "scripts": {
+    "tw-build": "npx @tailwindcss/cli -i ./src/input.css -o ./src/output.css --watch"
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "sweetalert2": "^11.26.25",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "daisyui": "^5.7.16"
+  }
+}

@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="MovieApp – Discover top rated, upcoming and popular movies and TV shows."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./src/output.css" />
+    <title>MovieApp — Discover Movies &amp; Shows</title>
+  </head>
+  <body
+    class="min-h-screen bg-bg-primary text-text-primary transition-colors duration-300"
+  >
+    <!-- Start header -->
+    <header
+      class="sticky top-0 z-50 w-full bg-bg-primary/80 backdrop-blur-xl border-b border-border shadow-[0_1px_24px_rgba(0,0,0,0.3)]"
+    >
+      <div
+        class="max-w-screen-xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between gap-4"
+      >
+        <a href="#" class="flex items-center gap-2 shrink-0 select-none group">
+          <span class="text-2xl">🎬</span>
+          <span
+            class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-accent via-violet-400 to-indigo-400 bg-clip-text text-transparent group-hover:opacity-80 transition-opacity"
+            >MovieApp</span
+          >
+        </a>
+
+        <nav
+          class="hidden lg:flex items-center gap-1"
+          aria-label="Main navigation"
+        >
+          <a
+            href="#"
+            class="px-3 py-2 rounded-lg text-sm font-medium text-text-muted hover:text-text-primary hover:bg-bg-secondary transition-all duration-200"
+            >Home</a
+          >
+
+          <div class="relative" id="movies-dd-wrap">
+            <button
+              id="movies-dd-btn"
+              aria-haspopup="true"
+              aria-expanded="false"
+              class="flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-medium text-text-muted hover:text-text-primary hover:bg-bg-secondary transition-all duration-200 cursor-pointer"
+            >
+              Movies
+              <svg
+                id="dd-chevron"
+                class="w-3.5 h-3.5 transition-transform duration-200"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2.5"
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+            <div
+              id="movies-dd-menu"
+              class="hidden z-50 bg-card border border-border rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.45)] p-1.5"
+            >
+              <a
+                href="#"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-text-muted hover:text-text-primary hover:bg-bg-secondary transition-colors duration-150"
+                ><span class="text-rating text-xs">★</span> Top Rated</a
+              >
+
+              <a
+                href="#"
+                class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-text-muted hover:text-text-primary hover:bg-bg-secondary transition-colors duration-150"
+                >🔥 Popular</a
+              >
+            </div>
+          </div>
+
+          <a
+            href="#"
+            class="px-3 py-2 rounded-lg text-sm font-medium text-text-muted hover:text-text-primary hover:bg-bg-secondary transition-all duration-200"
+            >TV Shows</a
+          >
+          <a
+            href="./pages/wishlist.html"
+            class="px-3 py-2 rounded-lg text-sm font-medium text-text-muted hover:text-text-primary hover:bg-bg-secondary transition-all duration-200"
+            >Watchlist</a
+          >
+        </nav>
+
+        <div class="flex items-center gap-2 shrink-0">
+          <div class="relative hidden lg:flex items-center">
+            <svg
+              class="absolute left-3 w-4 h-4 text-text-muted pointer-events-none"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.2"
+                d="M21 21l-5-5m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+              />
+            </svg>
+            <input
+              id="desktop-search"
+              type="text"
+              placeholder="Search movies…"
+              class="w-52 focus:w-72 pl-9 pr-4 py-2 rounded-full text-sm outline-none bg-bg-secondary border border-border text-text-primary placeholder-text-muted focus:border-accent focus:ring-1 focus:ring-accent/30"
+            />
+          </div>
+
+          <button
+            id="search-icon-btn"
+            aria-label="Open search"
+            class="lg:hidden flex items-center justify-center w-9 h-9 rounded-full bg-bg-secondary border border-border text-text-muted hover:text-accent hover:border-accent/50 transition-all duration-200"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.2"
+                d="M21 21l-5-5m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+              />
+            </svg>
+          </button>
+
+          <button
+            id="theme-toggle"
+            aria-label="Toggle theme"
+            class="flex items-center justify-center w-9 h-9 rounded-full bg-bg-secondary border border-border text-text-muted hover:text-accent hover:border-accent/50 transition-all duration-200"
+          >
+            <svg
+              id="icon-moon"
+              class="w-4 h-4 hidden"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+              />
+            </svg>
+            <svg
+              id="icon-sun"
+              class="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 3v1m0 16v1m8.66-10h-1M4.34 12h-1m15.07-6.07-.71.71M6.34 17.66l-.71.71M17.66 17.66l.71.71M6.34 6.34l-.71-.71M12 5a7 7 0 1 0 0 14A7 7 0 0 0 12 5z"
+              />
+            </svg>
+          </button>
+
+          <button
+            id="hamburger-btn"
+            aria-label="Toggle menu"
+            class="lg:hidden flex items-center justify-center w-9 h-9 rounded-full bg-bg-secondary border border-border text-text-muted hover:text-text-primary transition-all duration-200"
+          >
+            <svg
+              id="menu-icon-open"
+              class="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h8m-8 6h16"
+              />
+            </svg>
+            <svg
+              id="menu-icon-close"
+              class="w-5 h-5 hidden"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div
+        id="mobile-menu"
+        class="hidden lg:hidden border-t border-border bg-bg-primary px-4 py-3 space-y-1"
+      >
+        <a
+          href="#"
+          class="flex items-center px-3 py-2.5 rounded-xl text-sm font-medium text-text-muted hover:text-text-primary hover:bg-bg-secondary transition-colors duration-150"
+          >Home</a
+        >
+        <details class="group">
+          <summary
+            class="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium text-text-muted hover:text-text-primary hover:bg-bg-secondary transition-colors duration-150 cursor-pointer list-none"
+          >
+            Movies
+            <svg
+              class="w-4 h-4 transition-transform group-open:rotate-180"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.5"
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </summary>
+          <div class="pl-4 mt-1 space-y-0.5">
+            <a
+              href="#"
+              class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-text-muted hover:text-accent hover:bg-bg-secondary transition-colors duration-150"
+              ><span class="text-rating text-xs">★</span> Top Rated</a
+            >
+            <a
+              href="#"
+              class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-text-muted hover:text-accent hover:bg-bg-secondary transition-colors duration-150"
+              >🔥 Popular</a
+            >
+          </div>
+        </details>
+        <a
+          href="#"
+          class="flex items-center px-3 py-2.5 rounded-xl text-sm font-medium text-text-muted hover:text-text-primary hover:bg-bg-secondary transition-colors duration-150"
+          >TV Shows</a
+        >
+        <a
+          href="./pages/wishlist.html"
+          class="flex items-center px-3 py-2.5 rounded-xl text-sm font-medium text-text-muted hover:text-text-primary hover:bg-bg-secondary transition-colors duration-150"
+          >Watchlist</a
+        >
+      </div>
+    </header>
+    <!-- End header -->
+
+    <!-- Start Hero -->
+    <section
+      id="hero"
+      class="relative w-full h-full overflow-hidden"
+      style="height: calc(100vh - 65px)"
+    >
+      <div
+        id="hero-track"
+        class="flex h-full transition-transform duration-700 ease-in-out"
+      ></div>
+
+      <button
+        id="hero-prev"
+        aria-label="Previous slide"
+        class="absolute left-4 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-11 h-11 rounded-full bg-black/40 hover:bg-black/70 border border-white/15 text-white backdrop-blur-sm transition-all duration-200 hover:scale-110"
+      >
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2.5"
+            d="M15 19l-7-7 7-7"
+          />
+        </svg>
+      </button>
+      <button
+        id="hero-next"
+        aria-label="Next slide"
+        class="absolute right-4 top-1/2 -translate-y-1/2 z-10 flex items-center justify-center w-11 h-11 rounded-full bg-black/40 hover:bg-black/70 border border-white/15 text-white backdrop-blur-sm transition-all duration-200 hover:scale-110"
+      >
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2.5"
+            d="M9 5l7 7-7 7"
+          />
+        </svg>
+      </button>
+      <div
+        id="hero-dots"
+        class="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2"
+      >
+        <button
+          data-slide="0"
+          aria-label="Slide 1"
+          class="hero-dot h-1.5 rounded-full bg-white hover:bg-white/70 transition-all duration-300 w-7"
+        ></button>
+        <button
+          data-slide="1"
+          aria-label="Slide 2"
+          class="hero-dot h-1.5 rounded-full bg-white/40 hover:bg-white/70 transition-all duration-300 w-2"
+        ></button>
+        <button
+          data-slide="2"
+          aria-label="Slide 3"
+          class="hero-dot h-1.5 rounded-full bg-white/40 hover:bg-white/70 transition-all duration-300 w-2"
+        ></button>
+        <button
+          data-slide="3"
+          aria-label="Slide 4"
+          class="hero-dot h-1.5 rounded-full bg-white/40 hover:bg-white/70 transition-all duration-300 w-2"
+        ></button>
+        <button
+          data-slide="4"
+          aria-label="Slide 5"
+          class="hero-dot h-1.5 rounded-full bg-white/40 hover:bg-white/70 transition-all duration-300 w-2"
+        ></button>
+      </div>
+    </section>
+    <!-- End header -->
+
+    <!-- start toprated Movies -->
+
+    <!-- end toprated Movies -->
+
+    <div
+      id="search-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Search"
+      class="hidden fixed inset-0 z-[9999] items-start justify-center pt-20 px-4"
+    >
+      <div
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm"
+        id="backdrop"
+      ></div>
+      <div
+        class="modal-animate relative z-10 w-full max-w-lg bg-card border border-border rounded-2xl p-6 shadow-[0_24px_64px_rgba(0,0,0,0.55)]"
+      >
+        <div class="flex items-center justify-between mb-5">
+          <span
+            class="text-xs font-bold uppercase tracking-widest text-text-muted"
+            >Search</span
+          >
+          <button
+            id="closeSearchModal"
+            aria-label="Close search"
+            class="flex items-center justify-center w-8 h-8 rounded-full bg-bg-secondary border border-border text-text-muted hover:text-accent hover:border-accent/50 transition-all duration-150 text-sm font-medium"
+          >
+            ✕
+          </button>
+        </div>
+        <div class="relative flex items-center">
+          <svg
+            class="absolute left-4 w-5 h-5 text-text-muted pointer-events-none"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2.2"
+              d="M21 21l-5-5m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+            />
+          </svg>
+          <input
+            id="modal-search-input"
+            type="text"
+            placeholder="Search for movies, shows…"
+            class="w-full pl-12 pr-4 py-3.5 rounded-xl text-base outline-none bg-bg-secondary border border-border text-text-primary placeholder-text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all duration-200"
+          />
+        </div>
+        <p class="mt-4 text-center text-xs text-text-muted">
+          Press
+          <kbd
+            class="inline-block mx-0.5 px-1.5 py-0.5 rounded bg-bg-secondary border border-border text-[10px] font-mono"
+            >Esc</kbd
+          >
+          to close
+        </p>
+      </div>
+    </div>
+
+    <div
+      id="trailer-modal"
+      class="fixed inset-0 z-[9999] hidden items-center justify-center p-4"
+    >
+      <div
+        id="trailer-backdrop"
+        class="absolute inset-0 bg-black/70 backdrop-blur-md"
+      ></div>
+
+      <div
+        id="trailer-modal-content"
+        class="relative z-10 w-full max-w-5xl overflow-hidden rounded-2xl border border-border bg-card shadow-[0_24px_80px_rgba(0,0,0,0.6)]"
+      >
+        <div
+          class="h-1 w-full bg-gradient-to-r from-accent via-violet-500 to-indigo-500"
+        ></div>
+
+        <div
+          class="flex items-center justify-between gap-4 border-b border-border bg-card px-4 py-3 sm:px-6 sm:py-4"
+        >
+          <div class="flex items-center gap-3 min-w-0">
+            <div
+              class="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl bg-accent/10 text-accent"
+            >
+              <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </div>
+
+            <div class="min-w-0">
+              <p
+                class="text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-accent"
+              >
+                Official Trailer
+              </p>
+
+              <h2
+                id="trailer-title"
+                class="mt-1 truncate text-base sm:text-lg font-bold text-text-primary"
+              >
+                Movie Trailer
+              </h2>
+            </div>
+          </div>
+
+          <button
+            id="close-trailer"
+            type="button"
+            aria-label="Close trailer"
+            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-bg-secondary text-text-muted transition-all duration-200 hover:border-accent/50 hover:bg-accent/10 hover:text-accent"
+          >
+            <svg
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+        <div
+          id="trailer-video-container"
+          class="relative w-full aspect-video bg-black"
+        >
+          <div
+            id="trailer-loader"
+            class="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-black"
+          >
+            <div
+              class="h-10 w-10 animate-spin rounded-full border-4 border-white/20 border-t-accent"
+            ></div>
+            <p class="text-xs font-medium text-white/50">Loading trailer...</p>
+          </div>
+
+          <iframe
+            id="trailer-iframe"
+            src=""
+            title="Movie Trailer"
+            class="absolute inset-0 h-full w-full border-0"
+            allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+            allowfullscreen
+          ></iframe>
+        </div>
+        <div
+          class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-t border-border bg-bg-secondary/50 px-4 py-3 sm:px-6 sm:py-4"
+        >
+          <p class="text-xs text-text-muted">
+            Watch the official movie trailer
+          </p>
+
+          <button
+            id="close-trailer-bottom"
+            type="button"
+            class="w-full sm:w-auto rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-accent/20 transition-all duration-200 hover:bg-accent-hover hover:shadow-accent/30"
+          >
+            Close Preview
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="./js/main.js"></script>
+  </body>
+</html>

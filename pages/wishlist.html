@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta
+      name="description"
+      content="MovieApp – Your personal movie watchlist."
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="../src/output.css" />
+
+    <title>MovieApp — Watchlist</title>
+  </head>
+
+  <body
+    class="min-h-screen bg-bg-primary text-text-primary transition-colors duration-300"
+  >
+    <!-- Start Header -->
+    <header class="w-full">
+      <div class="max-w-screen-xl mx-auto px-4 md:px-8 pt-8">
+        <a
+          href="../index.html"
+          class="group inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-bg-secondary border border-border text-sm font-medium text-text-muted hover:text-text-primary hover:border-accent/40 transition-all duration-200"
+        >
+          <svg
+            class="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-1"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2.2"
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+
+          Back to Home
+        </a>
+      </div>
+    </header>
+    <!-- End Header -->
+
+    <!-- Start Wishlist -->
+    <main class="max-w-screen-xl mx-auto px-4 md:px-8 py-10 md:py-14">
+      <!-- Header -->
+      <section class="mb-10">
+        <div
+          class="flex flex-col md:flex-row md:items-end md:justify-between gap-6"
+        >
+          <div>
+            <div class="flex items-center gap-3 mb-4">
+              <div
+                class="flex items-center justify-center w-11 h-11 rounded-2xl bg-accent/10 border border-accent/20 text-accent"
+              >
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path
+                    d="M12 21s-7.5-4.35-9.5-8.5C.8 8.8 3.1 5 6.7 5c2 0 3.4 1.1 4.3 2.4C11.9 6.1 13.3 5 15.3 5c3.6 0 5.9 3.8 4.2 7.5C19.5 16.65 12 21 12 21z"
+                  />
+                </svg>
+              </div>
+
+              <span
+                class="text-xs font-bold uppercase tracking-[0.2em] text-text-muted"
+              >
+                Your Collection
+              </span>
+            </div>
+
+            <h1
+              class="text-4xl md:text-5xl font-extrabold tracking-tight text-text-primary"
+            >
+              My Wishlist
+            </h1>
+
+            <p
+              class="mt-3 max-w-xl text-sm md:text-base leading-6 text-text-muted"
+            >
+              Keep track of the movies you want to watch. Your personal
+              collection, all in one place.
+            </p>
+          </div>
+
+          <!-- Counter -->
+          <div
+            class="flex items-center gap-3 w-fit rounded-2xl bg-card border border-border px-5 py-3 shadow-sm"
+          >
+            <div
+              class="flex items-center justify-center w-10 h-10 rounded-xl bg-bg-secondary text-text-muted"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="1.8"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M4 6.5A2.5 2.5 0 016.5 4h11A2.5 2.5 0 0120 6.5v13a.5.5 0 01-.8.4L12 15l-7.2 4.9a.5.5 0 01-.8-.4v-13z"
+                />
+              </svg>
+            </div>
+
+            <div>
+              <p class="text-xs text-text-muted">Saved Movies</p>
+
+              <p id="wishlistCount" class="text-sm font-bold text-text-primary">
+                0 Movies
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Search -->
+      <section class="mb-10">
+        <div class="relative max-w-2xl">
+          <svg
+            class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-muted pointer-events-none"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="1.8"
+          >
+            <circle cx="11" cy="11" r="6.5" />
+            <path stroke-linecap="round" d="M16 16l4.5 4.5" />
+          </svg>
+
+          <input
+            id="wishlistSearch"
+            type="search"
+            placeholder="Search your wishlist..."
+            class="w-full h-14 pl-12 pr-5 rounded-2xl text-sm outline-none bg-bg-secondary border border-border text-text-primary placeholder-text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all duration-200"
+          />
+        </div>
+      </section>
+
+      <!-- Saved Movies -->
+      <section>
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h2 class="text-xl font-bold text-text-primary">Saved Movies</h2>
+
+            <p class="mt-1 text-sm text-text-muted">
+              Movies you've added to your wishlist
+            </p>
+          </div>
+        </div>
+
+        <!-- Movies Grid -->
+        <div
+          id="wishlistGrid"
+          class="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 xl:grid-cols-5"
+        ></div>
+      </section>
+
+      <!-- Empty State -->
+      <section id="empty-wishlist" class="hidden mt-16">
+        <div
+          class="mx-auto flex max-w-lg flex-col items-center rounded-3xl bg-card border border-border px-8 py-16 text-center shadow-sm"
+        >
+          <div
+            class="mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-accent/10 text-accent"
+          >
+            <svg
+              class="w-9 h-9"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="1.5"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M20.8 8.8a5 5 0 0 0-9-2.8 5 5 0 0 0-9 2.8C2.8 14.3 12 20 12 20s9.2-5.7 8.8-11.2z"
+              />
+            </svg>
+          </div>
+
+          <h2 class="text-xl font-bold text-text-primary">
+            Your wishlist is empty
+          </h2>
+
+          <p class="mt-2 text-sm leading-6 text-text-muted">
+            Start exploring movies and save the ones you don't want to forget.
+          </p>
+
+          <a
+            href="../index.html"
+            class="mt-7 inline-flex items-center justify-center rounded-xl bg-accent px-5 py-3 text-sm font-semibold text-white transition-all duration-200 hover:bg-accent-hover hover:shadow-lg hover:shadow-accent/20"
+          >
+            Explore Movies
+          </a>
+        </div>
+      </section>
+    </main>
+    <!-- End Wishlist -->
+
+    <!-- Search Modal -->
+    <div
+      id="search-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Search"
+      class="hidden fixed inset-0 z-[9999] items-start justify-center pt-20 px-4"
+    >
+      <div
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm"
+        id="backdrop"
+      ></div>
+
+      <div
+        class="modal-animate relative z-10 w-full max-w-lg bg-card border border-border rounded-2xl p-6 shadow-[0_24px_64px_rgba(0,0,0,0.55)]"
+      >
+        <div class="flex items-center justify-between mb-5">
+          <span
+            class="text-xs font-bold uppercase tracking-widest text-text-muted"
+          >
+            Search
+          </span>
+
+          <button
+            id="closeSearchModal"
+            aria-label="Close search"
+            class="flex items-center justify-center w-8 h-8 rounded-full bg-bg-secondary border border-border text-text-muted hover:text-accent hover:border-accent/50 transition-all duration-150"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div class="relative flex items-center">
+          <svg
+            class="absolute left-4 w-5 h-5 text-text-muted pointer-events-none"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2.2"
+              d="M21 21l-5-5m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+            />
+          </svg>
+
+          <input
+            id="modal-search-input"
+            type="text"
+            placeholder="Search for movies, shows…"
+            class="w-full pl-12 pr-4 py-3.5 rounded-xl text-base outline-none bg-bg-secondary border border-border text-text-primary placeholder-text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all duration-200"
+          />
+        </div>
+
+        <p class="mt-4 text-center text-xs text-text-muted">
+          Press
+          <kbd
+            class="inline-block mx-0.5 px-1.5 py-0.5 rounded bg-bg-secondary border border-border text-[10px] font-mono"
+          >
+            Esc
+          </kbd>
+          to close
+        </p>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="../js/services/washlist_service.js"></script>
+  </body>
+</html>
