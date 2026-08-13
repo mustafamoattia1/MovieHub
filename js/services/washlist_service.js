@@ -130,6 +130,7 @@ const deleteMovie = async (movieId) => {
     position: "top-end",
     icon: "success",
     title: "Removed from Watchlist",
+    theme: "dark",
     showConfirmButton: false,
     timer: 1800,
     timerProgressBar: true,

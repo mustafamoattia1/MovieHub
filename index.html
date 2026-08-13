@@ -13,8 +13,15 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.0/css/all.min.css"
+      integrity="sha512-ApSLB1Pd3/bZN8fWB/RG9YhN/7bd9Hkf3AGaE2mPfebjrxagjuBtx2GcgdqIlJkUzwylBo61r9Xa9NmgBI0swA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
     <link rel="stylesheet" href="./src/output.css" />
-    <title>MovieApp — Discover Movies &amp; Shows</title>
+    <title>MovieHub — Discover Movies &amp; Shows</title>
   </head>
   <body
     class="min-h-screen bg-bg-primary text-text-primary transition-colors duration-300"
@@ -26,12 +33,13 @@
       <div
         class="max-w-screen-xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between gap-4"
       >
-        <a href="#" class="flex items-center gap-2 shrink-0 select-none group">
+        <a
+          href="#"
+          class="inline-block text-2xl font-extrabold tracking-tight text-text-primary"
+        >
           <span class="text-2xl">🎬</span>
-          <span
-            class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-accent via-violet-400 to-indigo-400 bg-clip-text text-transparent group-hover:opacity-80 transition-opacity"
-            >MovieApp</span
-          >
+
+          Movie<span class="text-accent">Hub</span>
         </a>
 
         <nav
@@ -72,24 +80,13 @@
               class="hidden z-50 bg-card border border-border rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.45)] p-1.5"
             >
               <a
-                href="#"
+                href="#top-rated"
                 class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-text-muted hover:text-text-primary hover:bg-bg-secondary transition-colors duration-150"
                 ><span class="text-rating text-xs">★</span> Top Rated</a
-              >
-
-              <a
-                href="#"
-                class="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-text-muted hover:text-text-primary hover:bg-bg-secondary transition-colors duration-150"
-                >🔥 Popular</a
               >
             </div>
           </div>
 
-          <a
-            href="#"
-            class="px-3 py-2 rounded-lg text-sm font-medium text-text-muted hover:text-text-primary hover:bg-bg-secondary transition-all duration-200"
-            >TV Shows</a
-          >
           <a
             href="./pages/wishlist.html"
             class="px-3 py-2 rounded-lg text-sm font-medium text-text-muted hover:text-text-primary hover:bg-bg-secondary transition-all duration-200"
@@ -97,49 +94,7 @@
           >
         </nav>
 
-        <div class="flex items-center gap-2 shrink-0">
-          <div class="relative hidden lg:flex items-center">
-            <svg
-              class="absolute left-3 w-4 h-4 text-text-muted pointer-events-none"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2.2"
-                d="M21 21l-5-5m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-              />
-            </svg>
-            <input
-              id="desktop-search"
-              type="text"
-              placeholder="Search movies…"
-              class="w-52 focus:w-72 pl-9 pr-4 py-2 rounded-full text-sm outline-none bg-bg-secondary border border-border text-text-primary placeholder-text-muted focus:border-accent focus:ring-1 focus:ring-accent/30"
-            />
-          </div>
-
-          <button
-            id="search-icon-btn"
-            aria-label="Open search"
-            class="lg:hidden flex items-center justify-center w-9 h-9 rounded-full bg-bg-secondary border border-border text-text-muted hover:text-accent hover:border-accent/50 transition-all duration-200"
-          >
-            <svg
-              class="w-4 h-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2.2"
-                d="M21 21l-5-5m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-              />
-            </svg>
-          </button>
-
+        <div class="flex items-center gap-2 shrink-0"> 
           <button
             id="theme-toggle"
             aria-label="Toggle theme"
@@ -349,68 +304,267 @@
     </section>
     <!-- End header -->
 
-    <!-- start toprated Movies -->
+    <!-- Start Top Rated Movies -->
+    <section id="top-rated" class="py-14 md:py-20">
+      <div class="mx-auto max-w-screen-xl px-4 md:px-8">
+        <div class="mb-7 flex items-end justify-between gap-4">
+          <div>
+            <p
+              class="mb-2 text-xs font-bold uppercase tracking-[0.2em] text-accent"
+            >
+              Top Rated
+            </p>
 
-    <!-- end toprated Movies -->
+            <h2
+              class="text-2xl font-extrabold tracking-tight text-text-primary md:text-3xl"
+            >
+              Top Rated Movies
+            </h2>
 
-    <div
-      id="search-modal"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Search"
-      class="hidden fixed inset-0 z-[9999] items-start justify-center pt-20 px-4"
-    >
-      <div
-        class="fixed inset-0 bg-black/60 backdrop-blur-sm"
-        id="backdrop"
-      ></div>
-      <div
-        class="modal-animate relative z-10 w-full max-w-lg bg-card border border-border rounded-2xl p-6 shadow-[0_24px_64px_rgba(0,0,0,0.55)]"
-      >
-        <div class="flex items-center justify-between mb-5">
-          <span
-            class="text-xs font-bold uppercase tracking-widest text-text-muted"
-            >Search</span
+            <p class="mt-2 text-sm text-text-muted">
+              The highest-rated movies worth watching.
+            </p>
+          </div>
+
+          <a
+            id="top-rated-all"
+            href="./pages/movies.html"
+            class="hidden items-center gap-2 rounded-xl border border-border bg-bg-secondary px-4 py-2.5 text-sm font-semibold text-text-primary transition-all duration-200 hover:border-accent/40 hover:text-accent sm:inline-flex"
           >
+            All Movies
+
+            <svg
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </a>
+        </div>
+
+        <div class="relative">
           <button
-            id="closeSearchModal"
-            aria-label="Close search"
-            class="flex items-center justify-center w-8 h-8 rounded-full bg-bg-secondary border border-border text-text-muted hover:text-accent hover:border-accent/50 transition-all duration-150 text-sm font-medium"
+            id="top-rated-prev"
+            type="button"
+            aria-label="Previous movies"
+            class="absolute left-2 top-1/2 z-20 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-black/50 text-white shadow-lg backdrop-blur-md transition-all duration-200 hover:scale-110 hover:bg-black/75 disabled:cursor-not-allowed md:h-11 md:w-11 sm:flex"
           >
-            ✕
+            <svg
+              class="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2.5"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+
+          <div
+            id="top-rated-slider"
+            class="overflow-hidden px-12 sm:px-14 md:px-16"
+          >
+            <div
+              id="top-rated-track"
+              class="flex gap-4 transition-transform duration-500 ease-out will-change-transform md:gap-5"
+            ></div>
+          </div>
+
+          <button
+            id="top-rated-next"
+            type="button"
+            aria-label="Next movies"
+            class="absolute right-2 top-1/2 z-20 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-black/50 text-white shadow-lg backdrop-blur-md transition-all duration-200 hover:scale-110 hover:bg-black/75 disabled:cursor-not-allowed md:h-11 md:w-11 sm:flex"
+          >
+            <svg
+              class="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2.5"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
           </button>
         </div>
-        <div class="relative flex items-center">
-          <svg
-            class="absolute left-4 w-5 h-5 text-text-muted pointer-events-none"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+
+        <div class="mt-6 sm:hidden">
+          <a
+            href="./pages/movies.html"
+            class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-bg-secondary px-4 py-3 text-sm font-semibold text-text-primary transition-all duration-200 hover:border-accent/40 hover:text-accent"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2.2"
-              d="M21 21l-5-5m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-            />
-          </svg>
-          <input
-            id="modal-search-input"
-            type="text"
-            placeholder="Search for movies, shows…"
-            class="w-full pl-12 pr-4 py-3.5 rounded-xl text-base outline-none bg-bg-secondary border border-border text-text-primary placeholder-text-muted focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all duration-200"
-          />
+            All Movies
+
+            <svg
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </a>
         </div>
-        <p class="mt-4 text-center text-xs text-text-muted">
-          Press
-          <kbd
-            class="inline-block mx-0.5 px-1.5 py-0.5 rounded bg-bg-secondary border border-border text-[10px] font-mono"
-            >Esc</kbd
-          >
-          to close
-        </p>
       </div>
-    </div>
+    </section>
+    <!-- End Top Rated Movies -->
+
+    <footer class="border-t border-border bg-bg-primary">
+      <div class="mx-auto max-w-screen-xl px-4 md:px-8">
+        <div class="grid gap-10 py-12 md:grid-cols-2 lg:grid-cols-4">
+          <div class="lg:col-span-2">
+            <a
+              href="#"
+              class="inline-block text-2xl font-extrabold tracking-tight text-text-primary"
+            >
+              Movie<span class="text-accent">Hub</span>
+            </a>
+
+            <p class="mt-4 max-w-md text-sm leading-6 text-text-muted">
+              Discover the latest movies, explore top-rated titles, and find
+              your next favorite movie with MovieHub.
+            </p>
+
+            <div class="mt-6 flex items-center gap-3">
+              <a
+                href="#"
+                aria-label="Facebook"
+                class="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-bg-secondary text-text-muted transition-all duration-200 hover:border-accent/40 hover:bg-accent hover:text-white"
+              >
+                <i class="fa-brands fa-facebook-f"></i>
+              </a>
+
+              <a
+                href="#"
+                aria-label="Instagram"
+                class="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-bg-secondary text-text-muted transition-all duration-200 hover:border-accent/40 hover:bg-accent hover:text-white"
+              >
+                <i class="fa-brands fa-instagram"></i>
+              </a>
+
+              <a
+                href="#"
+                aria-label="X"
+                class="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-bg-secondary text-text-muted transition-all duration-200 hover:border-accent/40 hover:bg-accent hover:text-white"
+              >
+                <i class="fa-brands fa-x-twitter"></i>
+              </a>
+
+              <a
+                href="#"
+                aria-label="YouTube"
+                class="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-bg-secondary text-text-muted transition-all duration-200 hover:border-accent/40 hover:bg-accent hover:text-white"
+              >
+                <i class="fa-brands fa-youtube"></i>
+              </a>
+            </div>
+          </div>
+
+          <div>
+            <h3
+              class="text-sm font-bold uppercase tracking-wider text-text-primary"
+            >
+              Explore
+            </h3>
+
+            <nav class="mt-4 flex flex-col gap-3">
+              <a
+                href="#"
+                class="text-sm text-text-muted transition-colors hover:text-accent"
+              >
+                Home
+              </a>
+
+              <a
+                href="./pages/movies.html"
+                class="text-sm text-text-muted transition-colors hover:text-accent"
+              >
+                Movies
+              </a>
+
+              <a
+                href="#top-rated"
+                class="text-sm text-text-muted transition-colors hover:text-accent"
+              >
+                Top Rated
+              </a>
+            </nav>
+          </div>
+
+          <div>
+            <h3
+              class="text-sm font-bold uppercase tracking-wider text-text-primary"
+            >
+              MovieHub
+            </h3>
+
+            <nav class="mt-4 flex flex-col gap-3">
+              <a
+                href="#"
+                class="text-sm text-text-muted transition-colors hover:text-accent"
+              >
+                About Us
+              </a>
+
+              <a
+                href="#"
+                class="text-sm text-text-muted transition-colors hover:text-accent"
+              >
+                Contact
+              </a>
+
+              <a
+                href="#"
+                class="text-sm text-text-muted transition-colors hover:text-accent"
+              >
+                Privacy Policy
+              </a>
+            </nav>
+          </div>
+        </div>
+
+        <div
+          class="flex flex-col gap-4 border-t border-border py-6 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <p class="text-xs text-text-muted sm:text-sm">
+            © 2026 MovieHub. All rights reserved.
+          </p>
+
+          <a
+            href="#"
+            class="group inline-flex items-center gap-2 text-xs font-semibold text-text-muted transition-colors hover:text-accent sm:text-sm"
+          >
+            Back to top
+
+            <span
+              class="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-bg-secondary transition-all duration-200 group-hover:border-accent/40 group-hover:bg-accent group-hover:text-white"
+            >
+              <i class="fa-solid fa-arrow-up text-xs"></i>
+            </span>
+          </a>
+        </div>
+      </div>
+    </footer>
 
     <div
       id="trailer-modal"

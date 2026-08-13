@@ -1,352 +1,553 @@
-const moviesDdBtn = document.getElementById("movies-dd-btn");
-const moviesDdMenu = document.getElementById("movies-dd-menu");
-const ddChevron = document.getElementById("dd-chevron");
+/* ============================================================
+   CONFIG
+   ============================================================ */
 
-const desktopSearch = document.getElementById("desktop-search");
+const TMDB_API_KEY = window.TMDB_API_KEY || "a14cbdc8a097c452f501ce7e17ae5e7b";
+const TMDB_BASE_URL = "https://api.themoviedb.org/3";
+const POPULAR_MOVIES_URL = `${TMDB_BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}`;
 
-const themeToggle = document.getElementById("theme-toggle");
-const iconMoon = document.getElementById("icon-moon");
-const iconSun = document.getElementById("icon-sun");
+const HERO_SLIDE_COUNT = 5;
+const TOP_RATED_COUNT = 10;
 
-const hamburgerBtn = document.getElementById("hamburger-btn");
-const menuIconOpen = document.getElementById("menu-icon-open");
-const menuIconClose = document.getElementById("menu-icon-close");
-const mobileMenu = document.getElementById("mobile-menu");
+/* ============================================================
+   DOM ELEMENTS
+   ============================================================ */
 
-const heroTrack = document.getElementById("hero-track");
-const heroPrev = document.getElementById("hero-prev");
-const heroNext = document.getElementById("hero-next");
-const heroDots = document.querySelectorAll(".hero-dot");
+const elements = {
+  // Navbar
+  moviesDdBtn: document.getElementById("movies-dd-btn"),
+  moviesDdMenu: document.getElementById("movies-dd-menu"),
+  ddChevron: document.getElementById("dd-chevron"),
+  desktopSearch: document.getElementById("desktop-search"),
 
-const searchModal = document.getElementById("search-modal");
-const backdrop = document.getElementById("backdrop");
-const closeSearchModal = document.getElementById("closeSearchModal");
-const openSearchModalBtn = document.getElementById("search-icon-btn");
-const modalSearchInput = document.getElementById("modal-search-input");
+  // Theme
+  themeToggle: document.getElementById("theme-toggle"),
+  iconMoon: document.getElementById("icon-moon"),
+  iconSun: document.getElementById("icon-sun"),
+
+  // Mobile menu
+  hamburgerBtn: document.getElementById("hamburger-btn"),
+  menuIconOpen: document.getElementById("menu-icon-open"),
+  menuIconClose: document.getElementById("menu-icon-close"),
+  mobileMenu: document.getElementById("mobile-menu"),
+
+  // Hero slider
+  heroTrack: document.getElementById("hero-track"),
+  heroPrev: document.getElementById("hero-prev"),
+  heroNext: document.getElementById("hero-next"),
+  heroDots: document.querySelectorAll(".hero-dot"),
+
+  // Search modal
+  searchModal: document.getElementById("search-modal"),
+  backdrop: document.getElementById("backdrop"),
+  closeSearchModal: document.getElementById("closeSearchModal"),
+  openSearchModalBtn: document.getElementById("search-icon-btn"),
+  modalSearchInput: document.getElementById("modal-search-input"),
+
+  // Trailer modal
+  trailerModal: document.getElementById("trailer-modal"),
+  trailerBackdrop: document.getElementById("trailer-backdrop"),
+  trailerIframe: document.getElementById("trailer-iframe"),
+  trailerTitle: document.getElementById("trailer-title"),
+  trailerLoader: document.getElementById("trailer-loader"),
+  closeTrailer: document.getElementById("close-trailer"),
+  closeTrailerBottom: document.getElementById("close-trailer-bottom"),
+
+  // Top rated slider
+  topRatedSlider: document.getElementById("top-rated-slider"),
+  topRatedTrack: document.getElementById("top-rated-track"),
+  topRatedPrev: document.getElementById("top-rated-prev"),
+  topRatedNext: document.getElementById("top-rated-next"),
+};
+
 const htmlTag = document.documentElement;
 
-const trailerModal = document.getElementById("trailer-modal");
-const trailerBackdrop = document.getElementById("trailer-backdrop");
-const trailerIframe = document.getElementById("trailer-iframe");
-const trailerTitle = document.getElementById("trailer-title");
-const trailerLoader = document.getElementById("trailer-loader");
-const closeTrailer = document.getElementById("close-trailer");
-const closeTrailerBottom = document.getElementById("close-trailer-bottom");
+/* ============================================================
+   STATE
+   ============================================================ */
 
-const apiKey = `a14cbdc8a097c452f501ce7e17ae5e7b`;
-const baseURL = `https://api.themoviedb.org/3/movie/popular?api_key=${apiKey}`;
+const state = {
+  popularMovies: [],
+  topRatedMovies: [],
+  heroCurrentSlide: 0,
+  topRatedCurrentSlide: 0,
+};
 
-// theme mode toggle
+/* ============================================================
+   THEME
+   ============================================================ */
 
-if (localStorage.getItem("theme") === "dark") {
-  htmlTag.classList.add("dark");
-  iconMoon.classList.add("hidden");
-  iconSun.classList.remove("hidden");
-} else {
-  htmlTag.classList.remove("dark");
-  iconMoon.classList.remove("hidden");
-  iconSun.classList.add("hidden");
+function initTheme() {
+  const isDark = localStorage.getItem("theme") === "dark";
+  htmlTag.classList.toggle("dark", isDark);
+  elements.iconMoon.classList.toggle("hidden", isDark);
+  elements.iconSun.classList.toggle("hidden", !isDark);
 }
 
-const themeMode = () => {
-  const isDark = htmlTag.classList.contains("dark");
-  if (isDark) {
-    htmlTag.classList.remove("dark");
-    iconMoon.classList.remove("hidden");
-    iconSun.classList.add("hidden");
-    localStorage.setItem("theme", "light");
-  } else {
-    iconMoon.classList.add("hidden");
-    iconSun.classList.remove("hidden");
-    htmlTag.classList.add("dark");
-    localStorage.setItem("theme", "dark");
+function toggleTheme() {
+  const isDark = htmlTag.classList.toggle("dark");
+  elements.iconMoon.classList.toggle("hidden", isDark);
+  elements.iconSun.classList.toggle("hidden", !isDark);
+  localStorage.setItem("theme", isDark ? "dark" : "light");
+}
+
+/* ============================================================
+   DROPDOWN MENU
+   ============================================================ */
+
+function toggleDropdown() {
+  const willOpen = elements.moviesDdMenu.classList.contains("hidden");
+  elements.moviesDdMenu.classList.toggle("hidden", !willOpen);
+  elements.ddChevron.classList.toggle("rotate-180", willOpen);
+}
+
+function handleOutsideDropdownClick(e) {
+  const isOpen = !elements.moviesDdMenu.classList.contains("hidden");
+  if (!isOpen) return;
+
+  const clickedInside =
+    e.target === elements.moviesDdBtn ||
+    elements.moviesDdMenu.contains(e.target);
+
+  if (!clickedInside) {
+    elements.moviesDdMenu.classList.add("hidden");
+    elements.ddChevron.classList.remove("rotate-180");
   }
-};
+}
 
-// dropdown menu toggle
-const toggleDropdown = () => {
-  const isOpen = moviesDdMenu.classList.contains("hidden");
-  if (isOpen) {
-    moviesDdMenu.classList.remove("hidden");
-    ddChevron.classList.add("rotate-180");
-  } else {
-    moviesDdMenu.classList.add("hidden");
-    ddChevron.classList.remove("rotate-180");
-  }
-  document.addEventListener("click", (e) => {
-    if (isOpen) {
-      if (e.target !== moviesDdBtn && !moviesDdMenu.contains(e.target)) {
-        moviesDdMenu.classList.add("hidden");
-        ddChevron.classList.remove("rotate-180");
-      }
-    }
-  });
-};
+/* ============================================================
+   MOBILE MENU
+   ============================================================ */
 
-// hamburger menu toggle
-const toggleMobileMenu = () => {
-  const isOpen = !mobileMenu.classList.contains("hidden");
-  if (isOpen) {
-    mobileMenu.classList.add("hidden");
-    menuIconOpen.classList.remove("hidden");
-    menuIconClose.classList.add("hidden");
-  } else {
-    mobileMenu.classList.remove("hidden");
-    menuIconOpen.classList.add("hidden");
-    menuIconClose.classList.remove("hidden");
-  }
-};
+function toggleMobileMenu() {
+  const willOpen = elements.mobileMenu.classList.contains("hidden");
+  elements.mobileMenu.classList.toggle("hidden", !willOpen);
+  elements.menuIconOpen.classList.toggle("hidden", willOpen);
+  elements.menuIconClose.classList.toggle("hidden", !willOpen);
+}
 
-// search modal toggle
-const openSearchModal = () => {
-  searchModal.classList.replace("hidden", "flex");
-  setTimeout(() => modalSearchInput.focus(), 50);
-};
-const closeSearchModalFunc = () => {
-  searchModal.classList.replace("flex", "hidden");
-  modalSearchInput.value = "";
-};
+/* ============================================================
+   HERO SLIDER
+   ============================================================ */
 
-// slider
-let currentSlide = 0;
-const totalSlides = 5;
+function goToHeroSlide(index) {
+  state.heroCurrentSlide = index;
+  elements.heroTrack.style.transform = `translateX(-${index * 100}%)`;
 
-function goToSlide(index) {
-  currentSlide = index;
-
-  heroTrack.style.transform = `translateX(-${currentSlide * 100}%)`;
-
-  heroDots.forEach((dot, i) => {
-    if (i === currentSlide) {
-      dot.classList.remove("w-2", "bg-white/40");
-      dot.classList.add("w-7", "bg-white");
-    } else {
-      dot.classList.remove("w-7", "bg-white");
-      dot.classList.add("w-2", "bg-white/40");
-    }
+  elements.heroDots.forEach((dot, i) => {
+    const isActive = i === index;
+    dot.classList.toggle("w-7", isActive);
+    dot.classList.toggle("bg-white", isActive);
+    dot.classList.toggle("w-2", !isActive);
+    dot.classList.toggle("bg-white/40", !isActive);
   });
 }
 
-heroDots.forEach((dot) => {
-  dot.addEventListener("click", () => {
-    const slideIndex = Number(dot.dataset.slide);
+function nextHeroSlide() {
+  const next = (state.heroCurrentSlide + 1) % HERO_SLIDE_COUNT;
+  goToHeroSlide(next);
+}
 
-    goToSlide(slideIndex);
-  });
-});
+function prevHeroSlide() {
+  const prev =
+    (state.heroCurrentSlide - 1 + HERO_SLIDE_COUNT) % HERO_SLIDE_COUNT;
+  goToHeroSlide(prev);
+}
 
-// display popularMovies
-const displaySliderMovies = () => {
-  let box = ``;
-  popularMovies.forEach((movie) => {
-    box += `<div class="relative shrink-0 w-full h-full">
-  <img src="https://image.tmdb.org/t/p/original${movie.backdrop_path}" alt="${movie.title}" class="absolute inset-0 w-full h-full object-cover"/>
-  <div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/50 to-transparent"></div>
-  <div class="absolute inset-0 bg-gradient-to-t from-bg-primary via-transparent to-transparent"></div>
-  <div class="relative h-full flex items-center">
-    <div class="max-w-screen-xl mx-auto px-6 md:px-16 w-full">
-      <div class="max-w-xl">
-        <div class="flex items-center gap-3 mb-4">
-          <span class="flex items-center gap-1 text-sm font-semibold text-rating">
-            <svg class="w-4 h-4 fill-rating" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-            ${movie.vote_average.toFixed(1)}
-          </span>
-          <span class="text-sm text-white/50">${movie.release_date}</span>
+function renderHeroSlide(movie) {
+  return `
+    <div class="relative shrink-0 w-full h-full">
+      <img
+        src="https://image.tmdb.org/t/p/original${movie.backdrop_path}"
+        alt="${movie.title}"
+        class="absolute inset-0 w-full h-full object-cover"
+      />
+      <div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/50 to-transparent"></div>
+      <div class="absolute inset-0 bg-gradient-to-t from-bg-primary via-transparent to-transparent"></div>
+      <div class="relative h-full flex items-center">
+        <div class="max-w-screen-xl mx-auto px-6 md:px-16 w-full">
+          <div class="max-w-xl">
+            <div class="flex items-center gap-3 mb-4">
+              <span class="flex items-center gap-1 text-sm font-semibold text-rating">
+                <svg class="w-4 h-4 fill-rating" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+                ${movie.vote_average.toFixed(1)}
+              </span>
+              <span class="text-sm text-white/50">${movie.release_date}</span>
+            </div>
+            <h1 class="text-5xl md:text-6xl font-black text-white leading-[1.1] mb-4 drop-shadow-lg">
+              ${movie.title}
+            </h1>
+            <p class="text-base text-white/65 leading-relaxed mb-8 max-w-xl">
+              ${movie.overview}
+            </p>
+            <div class="flex items-center gap-3 flex-wrap">
+              <button
+                data-movie-id="${movie.id}"
+                class="watch-now-btn flex items-center gap-2 px-6 py-3 rounded-xl bg-accent hover:bg-accent-hover text-white font-semibold text-sm transition-all duration-200 shadow-[0_0_24px_rgba(139,92,246,0.45)]"
+              >
+                <svg class="w-5 h-5 fill-white" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                Watch Now
+              </button>
+              <button
+                data-addmovie-id="${movie.id}"
+                class="add-watchlist-btn flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-sm backdrop-blur-sm transition-all duration-200"
+              >
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Add to Watchlist
+              </button>
+            </div>
+          </div>
         </div>
-        <h1 class="text-5xl md:text-6xl font-black text-white leading-[1.1] mb-4 drop-shadow-lg">${movie.title}</h1>
-        <p class="text-base text-white/65 leading-relaxed mb-8 max-w-xl">${movie.overview}</p>
-        <div class="flex items-center gap-3 flex-wrap">
-          <button 
-          data-movie-id="${movie.id}"
-            class="flex watch-now-btn items-center gap-2 px-6 py-3 rounded-xl bg-accent hover:bg-accent-hover text-white font-semibold text-sm transition-all duration-200 shadow-[0_0_24px_rgba(139,92,246,0.45)]">
-            <svg class="w-5 h-5 fill-white" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-            Watch Now
-          </button>
-          <button data-addmovie-id="${movie.id}" class="flex add-watchlist-btn items-center gap-2 px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-sm backdrop-blur-sm transition-all duration-200">
-            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-            Add to Watchlist
+      </div>
+    </div>
+  `;
+}
+
+function renderHeroSlider() {
+  elements.heroTrack.innerHTML = state.popularMovies
+    .map(renderHeroSlide)
+    .join("");
+
+  elements.heroTrack.querySelectorAll(".watch-now-btn").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const movieId = button.dataset.movieId;
+      const movie = state.popularMovies.find((m) => m.id == movieId);
+      if (!movie) return;
+
+      try {
+        const trailer = await fetchMovieTrailer(movie.id);
+        openTrailerModal(trailer, movie);
+      } catch (error) {
+        showToast("error", "Unable to load trailer");
+      }
+    });
+  });
+}
+
+async function loadPopularMovies() {
+  try {
+    const res = await fetch(POPULAR_MOVIES_URL);
+    if (!res.ok) throw new Error("Failed to fetch popular movies");
+
+    const data = await res.json();
+    state.popularMovies = data.results.slice(0, HERO_SLIDE_COUNT);
+    renderHeroSlider();
+  } catch (error) {
+    showToast("error", "Unable to load featured movies");
+  }
+}
+
+/* ============================================================
+   TRAILER MODAL
+   ============================================================ */
+
+async function fetchMovieTrailer(movieId) {
+  const res = await fetch(
+    `${TMDB_BASE_URL}/movie/${movieId}/videos?api_key=${TMDB_API_KEY}`,
+  );
+  if (!res.ok) throw new Error("Failed to fetch trailer");
+
+  const data = await res.json();
+
+  return (
+    data.results.find(
+      (video) =>
+        video.site === "YouTube" && video.type === "Trailer" && video.official,
+    ) ||
+    data.results.find(
+      (video) => video.site === "YouTube" && video.type === "Trailer",
+    )
+  );
+}
+
+function openTrailerModal(trailer, movie) {
+  if (!trailer) {
+    showToast("error", "Trailer not available");
+    return;
+  }
+
+  elements.trailerModal.classList.remove("hidden");
+  elements.trailerModal.classList.add("flex");
+  elements.trailerTitle.textContent = movie.title;
+  elements.trailerLoader.classList.remove("hidden");
+  elements.trailerIframe.src = `https://www.youtube.com/embed/${trailer.key}?autoplay=1`;
+
+  elements.trailerIframe.onload = () => {
+    elements.trailerLoader.classList.add("hidden");
+  };
+}
+
+function closeTrailerModal() {
+  elements.trailerModal.classList.add("hidden");
+  elements.trailerModal.classList.remove("flex");
+  elements.trailerIframe.src = "";
+}
+
+/* ============================================================
+   WATCHLIST
+   ============================================================ */
+
+function showToast(icon, title) {
+  Swal.fire({
+    toast: true,
+    position: "top-end",
+    icon,
+    theme: "dark",
+    title,
+    showConfirmButton: false,
+    timer: 1800,
+    timerProgressBar: true,
+  });
+}
+
+function getWishlist() {
+  return JSON.parse(localStorage.getItem("wishlist")) || [];
+}
+
+function handleAddToWishlist(e) {
+  const addBtn = e.target.closest(".add-watchlist-btn");
+  if (!addBtn) return;
+
+  const movieId = Number(addBtn.dataset.addmovieId);
+  const movie =
+    state.popularMovies.find((m) => m.id === movieId) ||
+    state.topRatedMovies.find((m) => m.id === movieId);
+
+  if (!movie) return;
+
+  const wishlist = getWishlist();
+  const alreadyExists = wishlist.some((m) => m.id === movieId);
+
+  if (alreadyExists) {
+    showToast("error", "Already in Watchlist");
+    return;
+  }
+
+  wishlist.push(movie);
+  localStorage.setItem("wishlist", JSON.stringify(wishlist));
+  showToast("success", "Added to Watchlist");
+}
+
+/* ============================================================
+   TOP RATED SLIDER
+   ============================================================ */
+
+function getTopRatedCards() {
+  return elements.topRatedTrack.querySelectorAll(".movie-card");
+}
+
+function getTopRatedVisibleCards() {
+  const cards = getTopRatedCards();
+  if (!cards.length) return 1;
+
+  const sliderWidth = elements.topRatedSlider.clientWidth;
+  const cardWidth = cards[0].offsetWidth;
+  const gap = parseFloat(getComputedStyle(elements.topRatedTrack).gap) || 0;
+
+  return Math.max(1, Math.floor((sliderWidth + gap) / (cardWidth + gap)));
+}
+
+function updateTopRatedSlider() {
+  const cards = getTopRatedCards();
+  if (!cards.length) return;
+
+  const visibleCards = getTopRatedVisibleCards();
+  const maxSlide = Math.max(0, cards.length - visibleCards);
+  state.topRatedCurrentSlide = Math.min(state.topRatedCurrentSlide, maxSlide);
+
+  const cardWidth = cards[0].offsetWidth;
+  const gap = parseFloat(getComputedStyle(elements.topRatedTrack).gap) || 0;
+  const moveDistance = state.topRatedCurrentSlide * (cardWidth + gap);
+
+  elements.topRatedTrack.style.transform = `translateX(-${moveDistance}px)`;
+
+  const atStart = state.topRatedCurrentSlide === 0;
+  const atEnd = state.topRatedCurrentSlide === maxSlide;
+
+  elements.topRatedPrev.disabled = atStart;
+  elements.topRatedNext.disabled = atEnd;
+
+  elements.topRatedPrev.classList.toggle("opacity-40", atStart);
+  elements.topRatedPrev.classList.toggle("cursor-not-allowed", atStart);
+
+  elements.topRatedNext.classList.toggle("opacity-40", atEnd);
+  elements.topRatedNext.classList.toggle("cursor-not-allowed", atEnd);
+}
+
+function nextTopRatedSlide() {
+  const cards = getTopRatedCards();
+  if (!cards.length) return;
+
+  const visibleCards = getTopRatedVisibleCards();
+  const maxSlide = Math.max(0, cards.length - visibleCards);
+
+  if (state.topRatedCurrentSlide < maxSlide) {
+    state.topRatedCurrentSlide++;
+    updateTopRatedSlider();
+  }
+}
+
+function prevTopRatedSlide() {
+  if (state.topRatedCurrentSlide > 0) {
+    state.topRatedCurrentSlide--;
+    updateTopRatedSlider();
+  }
+}
+
+function renderTopRatedCard(movie) {
+  return `
+    <div class="movie-card group relative w-[190px] sm:w-[200px] md:w-[220px] shrink-0 overflow-hidden rounded-2xl bg-bg-secondary border border-border shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+      <div class="relative aspect-[2/3] overflow-hidden">
+        <img
+          src="https://image.tmdb.org/t/p/w500${movie.poster_path}"
+          alt="${movie.title}"
+          class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+        />
+        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+
+        <div class="absolute top-3 right-3 inline-flex items-center gap-1.5 rounded-lg bg-black/70 px-2.5 py-1.5 text-xs font-bold text-white backdrop-blur-md">
+          <i class="fa-solid fa-star text-yellow-400"></i>
+          <span>${movie.vote_average.toFixed(1)}</span>
+        </div>
+
+        <span class="absolute top-3 left-3 rounded-lg bg-accent px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wide text-white">
+          Movie
+        </span>
+
+        <div class="absolute inset-x-0 bottom-0 p-4">
+          <h3 class="truncate text-lg font-bold text-white" title="${movie.title}">
+            ${movie.title}
+          </h3>
+          <div class="mt-1.5 flex items-center gap-2 text-xs text-white/70">
+            <span>${movie.release_date?.slice(0, 4) || "N/A"}</span>
+            <span>•</span>
+            <span>Movie</span>
+          </div>
+        </div>
+
+        <div class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 backdrop-blur-[2px] transition-all duration-300 group-hover:opacity-100">
+          <button
+            data-movie-id="${movie.id}"
+            type="button"
+            class="watch-trailer-btn flex items-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-bold text-white shadow-lg transition-all duration-200 hover:scale-105 hover:brightness-110"
+          >
+            <i class="fa-solid fa-play text-xs"></i>
+            Watch Trailer
           </button>
         </div>
       </div>
     </div>
-  </div>
-</div>
-    
-    
-    `;
-  });
-  heroTrack.innerHTML = box;
+  `;
+}
 
-  const watchButtons = heroTrack.querySelectorAll(".watch-now-btn");
+function renderTopRatedSlider() {
+  elements.topRatedTrack.innerHTML = state.topRatedMovies
+    .map(renderTopRatedCard)
+    .join("");
 
-  watchButtons.forEach((button) => {
-    button.addEventListener("click", async () => {
-      const movieId = button.dataset.movieId;
+  state.topRatedCurrentSlide = 0;
+  updateTopRatedSlider();
 
-      const movie = popularMovies.find((movie) => movie.id == movieId);
+  elements.topRatedTrack
+    .querySelectorAll(".watch-trailer-btn")
+    .forEach((button) => {
+      button.addEventListener("click", async () => {
+        const movieId = button.dataset.movieId;
+        const movie = state.topRatedMovies.find((m) => m.id == movieId);
+        if (!movie) return;
 
-      const trailer = await getMovieTrailer(movie.id);
-
-      openTrailerModal(trailer, movie);
+        try {
+          const trailer = await fetchMovieTrailer(movie.id);
+          openTrailerModal(trailer, movie);
+        } catch (error) {
+          showToast("error", "Unable to load trailer");
+        }
+      });
     });
-  });
-};
+}
 
-// get popular movies to silder
-let popularMovies;
-const getPopularMovies = async () => {
-  const res = await fetch(`${baseURL}`, {
-    method: "GET",
-  });
-  const data = await res.json();
-  const movies = data.results.slice(0, 5);
-  popularMovies = movies;
-  displaySliderMovies();
-};
-getPopularMovies();
+async function loadTopRatedMovies() {
+  try {
+    const res = await fetch(POPULAR_MOVIES_URL);
+    if (!res.ok) throw new Error("Failed to fetch top rated movies");
 
-// get movie trailer
-const getMovieTrailer = async (movieId) => {
-  const res = await fetch(
-    `https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${apiKey}`,
-  );
+    const data = await res.json();
+    state.topRatedMovies = data.results.slice(0, TOP_RATED_COUNT);
+    renderTopRatedSlider();
+  } catch (error) {
+    showToast("error", "Unable to load top rated movies");
+  }
+}
 
-  const data = await res.json();
+/* ============================================================
+   SEARCH MODAL
+   ============================================================ */
 
-  const trailer =
-    data.results.find(
-      (video) =>
-        video.site === "YouTube" &&
-        video.type === "Trailer" &&
-        video.official === true,
-    ) ||
-    data.results.find(
-      (video) => video.site === "YouTube" && video.type === "Trailer",
+function openSearchModal() {
+  elements.searchModal.classList.remove("hidden");
+  elements.searchModal.classList.add("flex");
+  elements.modalSearchInput?.focus();
+}
+
+function closeSearchModalFn() {
+  elements.searchModal.classList.add("hidden");
+  elements.searchModal.classList.remove("flex");
+}
+
+/* ============================================================
+   EVENT LISTENERS
+   ============================================================ */
+
+function initEventListeners() {
+  elements.themeToggle.addEventListener("click", toggleTheme);
+
+  elements.moviesDdBtn.addEventListener("click", toggleDropdown);
+  document.addEventListener("click", handleOutsideDropdownClick);
+
+  elements.hamburgerBtn.addEventListener("click", toggleMobileMenu);
+
+  elements.heroNext.addEventListener("click", nextHeroSlide);
+  elements.heroPrev.addEventListener("click", prevHeroSlide);
+  elements.heroDots.forEach((dot) => {
+    dot.addEventListener("click", () =>
+      goToHeroSlide(Number(dot.dataset.slide)),
     );
-
-  return trailer;
-};
-// open trailer modal
-const openTrailerModal = (trailer, movie) => {
-  if (!trailer) {
-    alert("Trailer not available");
-    return;
-  }
-
-  trailerModal.classList.remove("hidden");
-  trailerModal.classList.add("flex");
-
-  trailerTitle.textContent = movie.title;
-
-  trailerLoader.classList.remove("hidden");
-
-  trailerIframe.src = `https://www.youtube.com/embed/${trailer.key}?autoplay=1`;
-
-  trailerIframe.onload = () => {
-    trailerLoader.classList.add("hidden");
-  };
-};
-// close trailer modal
-
-const closeTrailerModal = () => {
-  trailerModal.classList.add("hidden");
-  trailerModal.classList.remove("flex");
-
-  trailerIframe.src = "";
-};
-
-// add movie to wishlist
-const addToWishlist = () => {
-  htmlTag.addEventListener("click", (e) => {
-    const addBtn = e.target.closest(".add-watchlist-btn");
-    if (!addBtn) return;
-    const dataId = Number(addBtn.dataset.addmovieId);
-    const findMovie = popularMovies.find((movie) => movie.id === dataId);
-    const wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
-
-    const alreadyExists = wishlist.some((movie) => movie.id === dataId);
-    if (!alreadyExists) {
-      wishlist.push(findMovie);
-      Swal.fire({
-        toast: true,
-        position: "top-end",
-        icon: "success",
-        theme: "dark",
-        title: "Added to Watchlist",
-        showConfirmButton: false,
-        timer: 1800,
-        timerProgressBar: true,
-      });
-      localStorage.setItem("wishlist", JSON.stringify(wishlist));
-    } else {
-      Swal.fire({
-        toast: true,
-        position: "top-end",
-        icon: "error",
-        theme: "dark",
-        title: "Already in Watchlist",
-        showConfirmButton: false,
-        timer: 1800,
-        timerProgressBar: true,
-      });
-    }
   });
-};
 
-addToWishlist();
-// ------------- Event Listeners -------------
+  elements.closeTrailer.addEventListener("click", closeTrailerModal);
+  elements.closeTrailerBottom.addEventListener("click", closeTrailerModal);
+  elements.trailerBackdrop.addEventListener("click", closeTrailerModal);
 
-// theme toggle btn
-themeToggle.addEventListener("click", themeMode);
+  elements.topRatedNext.addEventListener("click", nextTopRatedSlide);
+  elements.topRatedPrev.addEventListener("click", prevTopRatedSlide);
+  window.addEventListener("resize", updateTopRatedSlider);
 
-// dropdown btn
-moviesDdBtn.addEventListener("click", toggleDropdown);
-
-// hamburger btn
-hamburgerBtn.addEventListener("click", toggleMobileMenu);
-
-// open search modal btn
-openSearchModalBtn.addEventListener("click", openSearchModal);
-
-// close search modal btn
-closeSearchModal.addEventListener("click", closeSearchModalFunc);
-
-// if i click on anything out of the search model close it
-document.addEventListener("click", (e) => {
-  if (!searchModal.classList.contains("hidden")) {
-    if (e.target === backdrop) {
-      closeSearchModalFunc();
-    }
+  if (elements.openSearchModalBtn) {
+    elements.openSearchModalBtn.addEventListener("click", openSearchModal);
   }
-});
-
-// if i click on esc close search model
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && !searchModal.classList.contains("hidden")) {
-    closeSearchModalFunc();
+  if (elements.closeSearchModal) {
+    elements.closeSearchModal.addEventListener("click", closeSearchModalFn);
   }
-});
-
-// slider next btn
-heroNext.addEventListener("click", () => {
-  currentSlide++;
-  if (currentSlide >= totalSlides) {
-    currentSlide = 0;
+  if (elements.backdrop) {
+    elements.backdrop.addEventListener("click", closeSearchModalFn);
   }
-  goToSlide(currentSlide);
-});
 
-// slider prev btn
-heroPrev.addEventListener("click", () => {
-  currentSlide--;
-  if (currentSlide < 0) {
-    currentSlide = totalSlides - 1;
-  }
-  goToSlide(currentSlide);
-});
+  htmlTag.addEventListener("click", handleAddToWishlist);
+}
 
-closeTrailer.addEventListener("click", closeTrailerModal);
+/* ============================================================
+   INIT
+   ============================================================ */
 
-closeTrailerBottom.addEventListener("click", closeTrailerModal);
+function init() {
+  initTheme();
+  initEventListeners();
+  loadPopularMovies();
+  loadTopRatedMovies();
+}
 
-trailerBackdrop.addEventListener("click", closeTrailerModal);
+init();
