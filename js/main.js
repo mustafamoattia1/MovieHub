@@ -31,20 +31,13 @@ const elements = {
   menuIconClose: document.getElementById("menu-icon-close"),
   mobileMenu: document.getElementById("mobile-menu"),
 
-  // Hero slider
+  // Hero
   heroTrack: document.getElementById("hero-track"),
   heroPrev: document.getElementById("hero-prev"),
   heroNext: document.getElementById("hero-next"),
   heroDots: document.querySelectorAll(".hero-dot"),
 
-  // Search modal
-  searchModal: document.getElementById("search-modal"),
-  backdrop: document.getElementById("backdrop"),
-  closeSearchModal: document.getElementById("closeSearchModal"),
-  openSearchModalBtn: document.getElementById("search-icon-btn"),
-  modalSearchInput: document.getElementById("modal-search-input"),
-
-  // Trailer modal
+  // Trailer
   trailerModal: document.getElementById("trailer-modal"),
   trailerBackdrop: document.getElementById("trailer-backdrop"),
   trailerIframe: document.getElementById("trailer-iframe"),
@@ -53,11 +46,12 @@ const elements = {
   closeTrailer: document.getElementById("close-trailer"),
   closeTrailerBottom: document.getElementById("close-trailer-bottom"),
 
-  // Top rated slider
+  // Top Rated
   topRatedSlider: document.getElementById("top-rated-slider"),
   topRatedTrack: document.getElementById("top-rated-track"),
   topRatedPrev: document.getElementById("top-rated-prev"),
   topRatedNext: document.getElementById("top-rated-next"),
+  topRatedIndicators: document.getElementById("top-rated-indicators"),
 };
 
 const htmlTag = document.documentElement;
@@ -176,30 +170,94 @@ function renderHeroSlide(movie) {
               </span>
               <span class="text-sm text-white/50">${movie.release_date}</span>
             </div>
-            <h1 class="text-5xl md:text-6xl font-black text-white leading-[1.1] mb-4 drop-shadow-lg">
+            <h1 class="md:text-5xl text-3xl font-black text-white leading-[1.1] mb-4 drop-shadow-lg">
               ${movie.title}
             </h1>
-            <p class="text-base text-white/65 leading-relaxed mb-8 max-w-xl">
+            <p class="md:text-base text-sm text-white/65 leading-relaxed mb-8 max-w-xl">
               ${movie.overview}
             </p>
-            <div class="flex items-center gap-3 flex-wrap">
-              <button
-                data-movie-id="${movie.id}"
-                class="watch-now-btn flex items-center gap-2 px-6 py-3 rounded-xl bg-accent hover:bg-accent-hover text-white font-semibold text-sm transition-all duration-200 shadow-[0_0_24px_rgba(139,92,246,0.45)]"
-              >
-                <svg class="w-5 h-5 fill-white" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
-                Watch Now
-              </button>
-              <button
-                data-addmovie-id="${movie.id}"
-                class="add-watchlist-btn flex items-center gap-2 px-6 py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-sm backdrop-blur-sm transition-all duration-200"
-              >
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                Add to Watchlist
-              </button>
-            </div>
+            <div class="flex flex-wrap items-center gap-2 sm:gap-3">
+  <!-- Watch Now -->
+  <button
+    data-movie-id="${movie.id}"
+    class="
+      watch-now-btn
+      flex
+      shrink-0
+      items-center
+      gap-2
+      rounded-xl
+      bg-accent
+      px-6
+      py-4
+      text-xs
+      font-semibold
+      text-white
+      shadow-[0_0_24px_rgba(139,92,246,0.45)]
+      transition-all
+      duration-200
+      hover:bg-accent-hover
+      sm:px-4
+      sm:py-3
+      sm:text-sm
+    "
+  >
+    <svg
+      class="h-4 w-4 shrink-0 fill-white sm:h-5 sm:w-5"
+      viewBox="0 0 24 24"
+    >
+      <path d="M8 5v14l11-7z" />
+    </svg>
+
+    Watch Now
+  </button>
+
+  <!-- Add to Watchlist -->
+  <button
+    data-addmovie-id="${movie.id}"
+    class="
+      add-watchlist-btn
+      flex
+      shrink-0
+      items-center
+      gap-2
+      rounded-xl
+      border
+      border-white/20
+      bg-white/10
+      px-4
+      py-4
+      text-xs
+      font-semibold
+      text-white
+      backdrop-blur-sm
+      transition-all
+      duration-200
+      hover:bg-white/20
+      sm:gap-2
+      sm:px-4
+      sm:py-3
+      sm:text-sm
+  
+    "
+  >
+    <svg
+      class="h-4 w-4 shrink-0 sm:h-5 sm:w-5"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M12 4v16m8-8H4"
+      />
+    </svg>
+
+    Add to Watchlist
+  </button>
+</div>
           </div>
         </div>
       </div>
@@ -335,107 +393,266 @@ function handleAddToWishlist(e) {
 /* ============================================================
    TOP RATED SLIDER
    ============================================================ */
-
 function getTopRatedCards() {
   return elements.topRatedTrack.querySelectorAll(".movie-card");
 }
 
 function getTopRatedVisibleCards() {
   const cards = getTopRatedCards();
+
   if (!cards.length) return 1;
 
   const sliderWidth = elements.topRatedSlider.clientWidth;
   const cardWidth = cards[0].offsetWidth;
+
   const gap = parseFloat(getComputedStyle(elements.topRatedTrack).gap) || 0;
 
   return Math.max(1, Math.floor((sliderWidth + gap) / (cardWidth + gap)));
 }
 
+/* =========================================
+   INDICATORS
+========================================= */
+
+function renderTopRatedIndicators(totalSlides) {
+  const container = elements.topRatedIndicators;
+
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  if (totalSlides <= 1) {
+    return;
+  }
+
+  for (let i = 0; i < totalSlides; i++) {
+    const indicator = document.createElement("button");
+
+    indicator.type = "button";
+
+    indicator.setAttribute("aria-label", `Go to slide ${i + 1}`);
+
+    indicator.className = `
+      h-1.5
+      w-1.5
+      shrink-0
+      rounded-full
+      bg-text-muted/30
+      transition-all
+      duration-300
+    `;
+
+    indicator.addEventListener("click", () => {
+      state.topRatedCurrentSlide = i;
+
+      updateTopRatedSlider();
+    });
+
+    container.appendChild(indicator);
+  }
+}
+
+function updateTopRatedIndicators() {
+  const container = elements.topRatedIndicators;
+
+  if (!container) return;
+
+  const indicators = container.querySelectorAll("button");
+
+  indicators.forEach((indicator, index) => {
+    const active = index === state.topRatedCurrentSlide;
+
+    indicator.classList.toggle("w-5", active);
+
+    indicator.classList.toggle("w-1.5", !active);
+
+    indicator.classList.toggle("bg-accent", active);
+
+    indicator.classList.toggle("bg-text-muted/30", !active);
+  });
+}
+
+/* =========================================
+   UPDATE SLIDER
+========================================= */
+
 function updateTopRatedSlider() {
   const cards = getTopRatedCards();
+
   if (!cards.length) return;
 
   const visibleCards = getTopRatedVisibleCards();
+
   const maxSlide = Math.max(0, cards.length - visibleCards);
+
   state.topRatedCurrentSlide = Math.min(state.topRatedCurrentSlide, maxSlide);
 
   const cardWidth = cards[0].offsetWidth;
+
   const gap = parseFloat(getComputedStyle(elements.topRatedTrack).gap) || 0;
+
   const moveDistance = state.topRatedCurrentSlide * (cardWidth + gap);
 
   elements.topRatedTrack.style.transform = `translateX(-${moveDistance}px)`;
 
+  /* Buttons */
+
   const atStart = state.topRatedCurrentSlide === 0;
+
   const atEnd = state.topRatedCurrentSlide === maxSlide;
 
   elements.topRatedPrev.disabled = atStart;
+
   elements.topRatedNext.disabled = atEnd;
 
   elements.topRatedPrev.classList.toggle("opacity-40", atStart);
+
   elements.topRatedPrev.classList.toggle("cursor-not-allowed", atStart);
 
   elements.topRatedNext.classList.toggle("opacity-40", atEnd);
+
   elements.topRatedNext.classList.toggle("cursor-not-allowed", atEnd);
+
+  /* Indicators */
+
+  const totalSlides = maxSlide + 1;
+
+  if (elements.topRatedIndicators.children.length !== totalSlides) {
+    renderTopRatedIndicators(totalSlides);
+  }
+
+  updateTopRatedIndicators();
 }
+
+/* =========================================
+   NEXT
+========================================= */
 
 function nextTopRatedSlide() {
   const cards = getTopRatedCards();
+
   if (!cards.length) return;
 
   const visibleCards = getTopRatedVisibleCards();
+
   const maxSlide = Math.max(0, cards.length - visibleCards);
 
   if (state.topRatedCurrentSlide < maxSlide) {
     state.topRatedCurrentSlide++;
+
     updateTopRatedSlider();
   }
 }
+
+/* =========================================
+   PREVIOUS
+========================================= */
 
 function prevTopRatedSlide() {
   if (state.topRatedCurrentSlide > 0) {
     state.topRatedCurrentSlide--;
+
     updateTopRatedSlider();
   }
 }
 
+/* =========================================
+   CARD
+========================================= */
+
 function renderTopRatedCard(movie) {
   return `
-    <div class="movie-card group relative w-[190px] sm:w-[200px] md:w-[220px] shrink-0 overflow-hidden rounded-2xl bg-bg-secondary border border-border shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
-      <div class="relative aspect-[2/3] overflow-hidden">
+    <div
+      class="
+        movie-card
+        group
+        relative
+        w-[190px]
+        shrink-0
+        overflow-hidden
+        rounded-2xl
+        border
+        border-border
+        bg-bg-secondary
+        shadow-lg
+        transition-all
+        duration-300
+        hover:-translate-y-2
+        hover:shadow-2xl
+        sm:w-[200px]
+        md:w-[220px]
+      "
+    >
+      <div
+        class="relative aspect-[2/3] overflow-hidden"
+      >
         <img
           src="https://image.tmdb.org/t/p/w500${movie.poster_path}"
           alt="${movie.title}"
           class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
-        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
 
-        <div class="absolute top-3 right-3 inline-flex items-center gap-1.5 rounded-lg bg-black/70 px-2.5 py-1.5 text-xs font-bold text-white backdrop-blur-md">
-          <i class="fa-solid fa-star text-yellow-400"></i>
-          <span>${movie.vote_average.toFixed(1)}</span>
+        <div
+          class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"
+        ></div>
+
+        <!-- Rating -->
+        <div
+          class="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-lg bg-black/70 px-2.5 py-1.5 text-xs font-bold text-white backdrop-blur-md"
+        >
+          <i
+            class="fa-solid fa-star text-yellow-400"
+          ></i>
+
+          <span>
+            ${movie.vote_average.toFixed(1)}
+          </span>
         </div>
 
-        <span class="absolute top-3 left-3 rounded-lg bg-accent px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wide text-white">
+        <!-- Movie -->
+        <span
+          class="absolute left-3 top-3 rounded-lg bg-accent px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wide text-white"
+        >
           Movie
         </span>
 
-        <div class="absolute inset-x-0 bottom-0 p-4">
-          <h3 class="truncate text-lg font-bold text-white" title="${movie.title}">
+        <!-- Info -->
+        <div
+          class="absolute inset-x-0 bottom-0 p-4"
+        >
+          <h3
+            class="truncate text-lg font-bold text-white"
+            title="${movie.title}"
+          >
             ${movie.title}
           </h3>
-          <div class="mt-1.5 flex items-center gap-2 text-xs text-white/70">
-            <span>${movie.release_date?.slice(0, 4) || "N/A"}</span>
+
+          <div
+            class="mt-1.5 flex items-center gap-2 text-xs text-white/70"
+          >
+            <span>
+              ${movie.release_date?.slice(0, 4) || "N/A"}
+            </span>
+
             <span>•</span>
+
             <span>Movie</span>
           </div>
         </div>
 
-        <div class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 backdrop-blur-[2px] transition-all duration-300 group-hover:opacity-100">
+        <!-- Trailer -->
+        <div
+          class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 backdrop-blur-[2px] transition-all duration-300 group-hover:opacity-100"
+        >
           <button
             data-movie-id="${movie.id}"
             type="button"
             class="watch-trailer-btn flex items-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-bold text-white shadow-lg transition-all duration-200 hover:scale-105 hover:brightness-110"
           >
-            <i class="fa-solid fa-play text-xs"></i>
+            <i
+              class="fa-solid fa-play text-xs"
+            ></i>
+
             Watch Trailer
           </button>
         </div>
@@ -444,24 +661,34 @@ function renderTopRatedCard(movie) {
   `;
 }
 
+/* =========================================
+   RENDER
+========================================= */
+
 function renderTopRatedSlider() {
   elements.topRatedTrack.innerHTML = state.topRatedMovies
     .map(renderTopRatedCard)
     .join("");
 
   state.topRatedCurrentSlide = 0;
-  updateTopRatedSlider();
+
+  requestAnimationFrame(() => {
+    updateTopRatedSlider();
+  });
 
   elements.topRatedTrack
     .querySelectorAll(".watch-trailer-btn")
     .forEach((button) => {
       button.addEventListener("click", async () => {
         const movieId = button.dataset.movieId;
+
         const movie = state.topRatedMovies.find((m) => m.id == movieId);
+
         if (!movie) return;
 
         try {
           const trailer = await fetchMovieTrailer(movie.id);
+
           openTrailerModal(trailer, movie);
         } catch (error) {
           showToast("error", "Unable to load trailer");
@@ -470,32 +697,26 @@ function renderTopRatedSlider() {
     });
 }
 
+/* =========================================
+   LOAD
+========================================= */
+
 async function loadTopRatedMovies() {
   try {
     const res = await fetch(POPULAR_MOVIES_URL);
-    if (!res.ok) throw new Error("Failed to fetch top rated movies");
+
+    if (!res.ok) {
+      throw new Error("Failed to fetch top rated movies");
+    }
 
     const data = await res.json();
+
     state.topRatedMovies = data.results.slice(0, TOP_RATED_COUNT);
+
     renderTopRatedSlider();
   } catch (error) {
     showToast("error", "Unable to load top rated movies");
   }
-}
-
-/* ============================================================
-   SEARCH MODAL
-   ============================================================ */
-
-function openSearchModal() {
-  elements.searchModal.classList.remove("hidden");
-  elements.searchModal.classList.add("flex");
-  elements.modalSearchInput?.focus();
-}
-
-function closeSearchModalFn() {
-  elements.searchModal.classList.add("hidden");
-  elements.searchModal.classList.remove("flex");
 }
 
 /* ============================================================
